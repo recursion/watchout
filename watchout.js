@@ -26,11 +26,7 @@ var update = function(data) {
     .attr("r", 10)
     .attr("cx", width / 2)
     .attr("cy", height / 2);
-  // .attr("cx", Math.floor(Math.random() * (width - 0)))
-  // .attr("cy", Math.floor(Math.random() * (height - 0)));
-  // .circle(function(d) {
-  //   return d;
-  // });
+
 
   enemies.attr("cx", function() {
     return Math.floor(Math.random() * (width - 0));
@@ -41,4 +37,8 @@ var update = function(data) {
 
 };
 update(enemies);
+
+setInterval(function() {
+  update(enemies);
+}, 500);
 
