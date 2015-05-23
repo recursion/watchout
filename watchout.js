@@ -4,6 +4,7 @@
 var player = [0];
 var highScore = 0;
 var currentScore = 0;
+var timer = Date.now();
 var collisions = 0;
 
 // SVG Element height and width settings
@@ -12,7 +13,7 @@ var width = 960,
 
 // Create and initialize enemies
 var enemies = [];
-for (var i = 0; i <= 0; i++) {
+for (var i = 0; i <= 15; i++) {
   enemies.push(Math.floor(Math.random() * (20 - 5) + 5));
 }
 
@@ -30,6 +31,8 @@ var drag = d3.behavior.drag()
 
 // Main update method - all the action is here
 var update = function(enemy, hero) {
+
+  document.getElementById("current").innerHTML = "Current score: " + Math.floor((Date.now() - timer) / 1000);
 
   var enemies = svg.selectAll("circle")
     .data(enemy);
@@ -79,29 +82,31 @@ var update = function(enemy, hero) {
 
       // check for collisions
       if (leftCollision(enemy, player) && topCollision(enemy, player)) {
-        console.log('BOOM1');
+        scoreboard();
       }
       if (leftCollision(enemy, player) && bottomCollision(enemy, player)) {
-        console.log('BOOM2');
+        scoreboard();
       }
       if (rightCollision(enemy, player) && topCollision(enemy, player)) {
-        console.log('BOOM3');
+        scoreboard();
       }
       if (rightCollision(enemy, player) && bottomCollision(enemy, player)) {
-        console.log('BOOM4');
+        scoreboard();
       }
 
     })
     .style("fill", function() {
       return "rgb(" + randy(0, 255) + ", " + randy(0, 255) + ", " + randy(0, 255) + ")"
     })
-    // .attr("r", function() { return Math.floor(Math.random() * (20 - 5) + 5); })
-    // .attr("cx", function() {
-    //   return Math.floor(Math.random() * (width - 0));
-    // })
-    // .attr("cy", function() {
-    //   return Math.floor(Math.random() * (height - 0));
-    // });
+    .attr("r", function() {
+      return Math.floor(Math.random() * (20 - 5) + 5);
+    })
+    .attr("cx", function() {
+      return Math.floor(Math.random() * (width - 0));
+    })
+    .attr("cy", function() {
+      return Math.floor(Math.random() * (height - 0));
+    });
 };
 
 // get this party started
@@ -115,6 +120,18 @@ setInterval(function() {
 //////////////////////////////////////////////
 //      HELPER FUNCTIONS
 ////////////////////////////////////////////
+
+// Update scoreboard if there is a collision
+
+function scoreboard() {
+  collisions++;
+  currentScore = Math.floor((Date.now() - timer) / 1000);
+  highScore = currentScore > highScore ? currentScore : highScore;
+  document.getElementById("high").innerHTML = "High score: " + highScore;
+  timer = Date.now();
+  document.getElementById("collisions").innerHTML = "Collisions: " + collisions;
+}
+
 
 // Create a random number between min and max
 function randy(min, max) {
