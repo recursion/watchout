@@ -32,25 +32,27 @@ var update = function(enemy, hero) {
   var enemies = svg.selectAll("circle")
     .data(enemy);
 
+  var player = svg.selectAll("rect")
+    .data(hero)
+    .call(drag);
+
   enemies.attr("class", "enemies");
 
+  // On enter
   enemies.enter().append("circle")
     .attr("r", function(d) { return d;})
     .attr("cx", width / 2)
     .attr("cy", height / 2)
     .classed("enemies", true);
 
-  var player = svg.selectAll("rect")
-    .data(hero)
-    .call(drag);
-
   player.enter().append("rect")
     .attr("width", 30)
     .attr("height", 30)
     .attr("x", width / 2)
-    .attr("y", height / 2)
+    .attr("y", 0)
     .classed("player", true);
 
+  // Enemies transitions
   enemies
     .transition()
     .duration(1000)
@@ -69,8 +71,10 @@ var update = function(enemy, hero) {
     });
 };
 
+// get this party started
 update(enemies, player);
 
+// keep in going!
 setInterval(function() {
   update(enemies, player);
 }, 1000);
