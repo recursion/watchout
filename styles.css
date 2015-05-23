@@ -3,10 +3,15 @@
 Feel free to use it if you like. */
 
 svg {
-    background-color: orange;
+	float: left;
+    background-color: grey;
 }
 
 .enemies {
-    background-color: black;
+    fill: blue;
 }
 
+.player {
+    fill: white;
+    cursor: move;
+}
