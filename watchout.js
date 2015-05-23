@@ -32,13 +32,13 @@ function dragstarted(d) {
 }
 
 function dragged(d) {
-  var p = d3.select(this);
-  d3.select(this)
+  var grabbedPlayer = d3.select(this);
+  grabbedPlayer
     .attr("x", function(d) {
-      return +p.attr("x") + d3.event.dx;
+      return +grabbedPlayer.attr("x") + d3.event.dx;
     })
     .attr("y", function(d) {
-     return +p.attr("y") + d3.event.dy;
+     return +grabbedPlayer.attr("y") + d3.event.dy;
    });
 }
 
