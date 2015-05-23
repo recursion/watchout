@@ -42,7 +42,9 @@ var update = function(enemy, hero) {
 
   // On enter
   enemies.enter().append("circle")
-    .attr("r", function(d) { return d;})
+    .attr("r", function(d) {
+      return d;
+    })
     .attr("cx", width / 2)
     .attr("cy", height / 2)
     .classed("enemies", true);
@@ -90,7 +92,9 @@ var update = function(enemy, hero) {
       }
 
     })
-    .style("fill", function() { return "rgb("+randy(0, 255)+", "+randy(0, 255)+", "+randy(0, 255)+")" })
+    .style("fill", function() {
+      return "rgb(" + randy(0, 255) + ", " + randy(0, 255) + ", " + randy(0, 255) + ")"
+    })
     // .attr("r", function() { return Math.floor(Math.random() * (20 - 5) + 5); })
     // .attr("cx", function() {
     //   return Math.floor(Math.random() * (width - 0));
