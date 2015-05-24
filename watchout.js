@@ -1,21 +1,15 @@
 // start slingin' some d3 here.
 
 // Initialize globals
-var player = [0];
 var highScore = 0;
 var currentScore = 0;
 var timer = Date.now();
 var collisions = 0;
+var numEnemies = 25;
 
 // SVG Element height and width settings
 var width = 960,
   height = 500;
-
-// Create and initialize enemies
-var enemies = [];
-for (var i = 0; i <= 15; i++) {
-  enemies.push(Math.floor(Math.random() * (20 - 5) + 5));
-}
 
 // Create our SVG game board
 var svg = d3.select("body").append("svg")
@@ -29,115 +23,6 @@ var drag = d3.behavior.drag()
   })
   .on("drag", dragged);
 
-// Main update method - all the action is here
-var update = function(enemy, hero) {
-
-  document.getElementById("current").innerHTML = "Current score: " + Math.floor((Date.now() - timer) / 1000);
-
-  var enemies = svg.selectAll("circle")
-    .data(enemy);
-
-  var player = svg.selectAll("rect")
-    .data(hero)
-    .call(drag);
-
-  enemies.attr("class", "enemies");
-
-  // On enter
-  enemies.enter().append("circle")
-    .attr("r", function(d) {
-      return d;
-    })
-    .attr("cx", width / 2)
-    .attr("cy", height / 2)
-    .classed("enemies", true);
-
-  player.enter().append("rect")
-    .attr("width", 30)
-    .attr("height", 30)
-    .attr("x", width / 2)
-    .attr("y", 0)
-    .attr("id", "player")
-    .classed("player", true);
-
-  // Enemies transitions
-  enemies
-    .transition()
-    .duration(1000)
-    .tween("collision", function(d) {
-      // grab the player and toss his values into an object we can use to do collision detection
-      var player = {};
-      var grabbedPlayer = d3.select(".player");
-      player.x = +grabbedPlayer.attr("x");
-      player.y = +grabbedPlayer.attr("y");
-      player.width = 30;
-      player.height = 30;
-
-      // grab enemy and toss his values into an object we can use to do collision detection
-      var enemy = {};
-      var grabbedEnemy = d3.select(this);
-      enemy.x = +grabbedEnemy.attr("cx");
-      enemy.y = +grabbedEnemy.attr("cy");
-      enemy.r = +grabbedEnemy.attr("r");
-
-      // check for collisions
-      if (leftCollision(enemy, player) && topCollision(enemy, player)) {
-        scoreboard();
-      }
-      if (leftCollision(enemy, player) && bottomCollision(enemy, player)) {
-        scoreboard();
-      }
-      if (rightCollision(enemy, player) && topCollision(enemy, player)) {
-        scoreboard();
-      }
-      if (rightCollision(enemy, player) && bottomCollision(enemy, player)) {
-        scoreboard();
-      }
-
-    })
-    .style("fill", function() {
-      return "rgb(" + randy(0, 255) + ", " + randy(0, 255) + ", " + randy(0, 255) + ")"
-    })
-    .attr("r", function() {
-      return Math.floor(Math.random() * (20 - 5) + 5);
-    })
-    .attr("cx", function() {
-      return Math.floor(Math.random() * (width - 0));
-    })
-    .attr("cy", function() {
-      return Math.floor(Math.random() * (height - 0));
-    });
-};
-
-// get this party started
-update(enemies, player);
-
-// keep in going!
-setInterval(function() {
-  update(enemies, player);
-}, 1000);
-
-//////////////////////////////////////////////
-//      HELPER FUNCTIONS
-////////////////////////////////////////////
-
-// Update scoreboard if there is a collision
-
-function scoreboard() {
-  collisions++;
-  currentScore = Math.floor((Date.now() - timer) / 1000);
-  highScore = currentScore > highScore ? currentScore : highScore;
-  document.getElementById("high").innerHTML = "High score: " + highScore;
-  timer = Date.now();
-  document.getElementById("collisions").innerHTML = "Collisions: " + collisions;
-}
-
-
-// Create a random number between min and max
-function randy(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
-};
-
 // Drag handler
 function dragged(d) {
   var grabbedPlayer = d3.select(this);
@@ -148,7 +33,114 @@ function dragged(d) {
     .attr("y", function(d) {
       return +grabbedPlayer.attr("y") + d3.event.dy;
     });
-};
+}
+
+var player = svg.selectAll("rect")
+    .data([1])
+    .enter().append("rect")
+    .call(drag)
+    .attr("width", 30)
+    .attr("height", 30)
+    .attr("x", width / 2)
+    .attr("y", 0)
+    .attr("id", "player")
+    .classed("player", true);
+
+// Create and initialize enemies
+var enemies = svg.selectAll("circle")
+    .data(d3.range(numEnemies))
+    .enter().append("circle")
+    .attr("r", function(d) {
+      return d;
+    })
+    .attr("cx", width / 2)
+    .attr("cy", height / 2)
+    .classed("enemies", true);
+
+
+
+document.getElementById("current").innerHTML = "Current score: " + Math.floor((Date.now() - timer) / 1000);
+
+d3.timer(collisionDetection);
+move(enemies);
+setInterval(function() {
+  scoreboard();
+}, 250);
+
+//////////////////////////////////////////////
+//      HELPER FUNCTIONS
+////////////////////////////////////////////
+
+// Update scoreboard if there is a collision
+
+function scoreboard() {
+  currentScore = Math.floor((Date.now() - timer) / 1000);
+  highScore = currentScore > highScore ? currentScore : highScore;
+  document.getElementById("high").innerHTML = "High score: " + highScore;
+  document.getElementById("collisions").innerHTML = "Collisions: " + collisions;
+}
+
+function collisionDetection() {
+  // grab the player and toss his values into an object we can use to do collision detection
+  var player = {};
+  var grabbedPlayer = d3.select(".player");
+  player.x = +grabbedPlayer.attr("x");
+  player.y = +grabbedPlayer.attr("y");
+  player.width = 30;
+  player.height = 30;
+
+  // grab enemy and toss his values into an object we can use to do collision detection
+  enemies.each(function() {
+    var enemy = {};
+    var grabbedEnemy = d3.select(this);
+    enemy.x = +grabbedEnemy.attr("cx");
+    enemy.y = +grabbedEnemy.attr("cy");
+    enemy.r = +grabbedEnemy.attr("r");
+
+    // check for collisions
+    if (leftCollision(enemy, player) && topCollision(enemy, player)) {
+      collisions++;
+      timer = Date.now();
+    }
+    if (leftCollision(enemy, player) && bottomCollision(enemy, player)) {
+      collisions++;
+      timer = Date.now();
+    }
+    if (rightCollision(enemy, player) && topCollision(enemy, player)) {
+      collisions++;
+      timer = Date.now();
+    }
+    if (rightCollision(enemy, player) && bottomCollision(enemy, player)) {
+      collisions++;
+      timer = Date.now();
+    }
+  });
+}
+
+function move(element) {
+  // Enemies transitions
+  element
+    .transition().duration(1000)
+    .style("fill", function() {
+      return "rgb(" + randy(0, 255) + ", " + randy(0, 255) + ", " + randy(0, 255) + ")"
+    })
+    .attr("r", function() {
+      return randy(5, 20);
+    })
+    .attr("cx", function() {
+      return randy(0, width);
+    })
+    .attr("cy", function() {
+      return randy(0, height);
+    }).each("end", function() {
+      move(d3.select(this));
+    });
+}
+
+// Create a random number between min and max
+function randy(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
 
 // Collision detection
 // is enemyX - enemyRadius within (playerX <-> playerX + playerWidth)
@@ -157,7 +149,7 @@ function leftCollision(enemy, player) {
     return true;
   }
   return false;
-};
+}
 
 // is enemyY - enemyRadius within (playerY <-> playerY + playerHeight)
 function topCollision(enemy, player) {
@@ -165,7 +157,7 @@ function topCollision(enemy, player) {
     return true;
   }
   return false;
-};
+}
 
 // is enemyX + enemyRadius within (playerX <-> playerX + playerWidth)
 function rightCollision(enemy, player) {
@@ -173,7 +165,7 @@ function rightCollision(enemy, player) {
     return true;
   }
   return false;
-};
+}
 
 // is enemyY + enemyRadius within (playerY <-> playerY + playerHeight)
 function bottomCollision(enemy, player) {
@@ -181,4 +173,4 @@ function bottomCollision(enemy, player) {
     return true;
   }
   return false;
-};
+}
