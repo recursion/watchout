@@ -59,7 +59,7 @@ var enemies = svg.selectAll("circle")
 
 
 
-document.getElementById("current").innerHTML = "Current score: " + Math.floor((Date.now() - timer) / 1000);
+
 
 d3.timer(collisionDetection);
 move(enemies);
@@ -76,6 +76,7 @@ setInterval(function() {
 function scoreboard() {
   currentScore = Math.floor((Date.now() - timer) / 1000);
   highScore = currentScore > highScore ? currentScore : highScore;
+  document.getElementById("current").innerHTML = "Current score: " + Math.floor((Date.now() - timer) / 1000);
   document.getElementById("high").innerHTML = "High score: " + highScore;
   document.getElementById("collisions").innerHTML = "Collisions: " + collisions;
 }
