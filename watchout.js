@@ -57,10 +57,7 @@ var enemies = svg.selectAll("circle")
     .attr("cy", height / 2)
     .classed("enemies", true);
 
-
-
-
-
+// Timers and whatnot
 d3.timer(collisionDetection);
 move(enemies);
 setInterval(function() {
