@@ -2,16 +2,28 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 
-svg {
+body {
+	background-color: grey;
+	color: yellow;
 	float: left;
-    background-color: grey;
+}
+
+svg {
+    position: relative;
+    float: top left;
+    background-color: white;
+    border: medium solid black;
 }
 
 .enemies {
-    fill: blue;
+    /*fill: red;*/
+    background-image: url('asteroid.png')
+    background-size: 100% 100%;
 }
 
 .player {
-    fill: white;
+    fill: red;
     cursor: move;
+    /*background-image: url('asteroid.png');*/
+    background-size: 100% 100%;
 }
